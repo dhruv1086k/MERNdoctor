@@ -7,7 +7,7 @@ import About from "./pages/About";
 import Login from "./pages/Login";
 import MyAppointments from "./pages/MyAppointments";
 import MyProfile from "./pages/MyProfile";
-import Appointment from "./pages/appointment";
+import Appointment from "./pages/Appointment";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 

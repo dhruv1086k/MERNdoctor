@@ -2,10 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
+import RelatedDoctors from "../components/RelatedDoctors";
 
 const Appointment = () => {
   const { docId } = useParams();
   const { doctors, currencySymbol } = useContext(AppContext);
+
+  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
   const [docInfo, setDocInfo] = useState(null);
   const [docSlots, setDocSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
@@ -72,10 +76,6 @@ const Appointment = () => {
     getAvailableSlot();
   }, [docInfo]);
 
-  useEffect(() => {
-    console.log(docSlots);
-  }, [docSlots]);
-
   return (
     docInfo && (
       <div className="mt-5">
@@ -120,6 +120,57 @@ const Appointment = () => {
               </span>
             </p>
           </div>
+        </div>
+
+        {/* --------------------Booking Slots -------------------- */}
+        <div className="sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700">
+          <p>Booking Slots</p>
+          <div className="flex gap-3 items-center w-full overflow-x-scroll mt-4">
+            {docSlots.length &&
+              docSlots.map((slot, idx) => (
+                <div
+                  onClick={() => {
+                    setSlotIndex(idx);
+                  }}
+                  className={`text-center py-6 min-w-16 cursor-pointer rounded-full ${
+                    slotIndex === idx
+                      ? "bg-primary text-white"
+                      : "border border-gray-200"
+                  }`}
+                  key={idx}
+                >
+                  <p>{slot[0] && daysOfWeek[slot[0].datetime.getDay()]}</p>
+                  <p>{slot[0] && slot[0].datetime.getDate()}</p>
+                </div>
+              ))}
+          </div>
+
+          <div className="flex items-center gap-3 w-full flex-wrap mt-4">
+            {docSlots.length &&
+              docSlots[slotIndex].map((slot, idx) => (
+                <p
+                  onClick={() => setSlotTime(slot.time)}
+                  className={`text-sm font-light flex-shrink-0 px-5 py-2 rounded-full cursor-pointer ${
+                    slot.time === slotTime
+                      ? "bg-primary text-white"
+                      : "border border-gray-200"
+                  }`}
+                  key={idx}
+                >
+                  {slot.time.toLowerCase()}
+                </p>
+              ))}
+          </div>
+
+          <button className="bg-primary text-white text-sm font-light px-14 py-3 rounded-full my-6">
+            Book an Appointment
+          </button>
+        </div>
+
+        {/* ------------------- listing related doctors ---------------------- */}
+        <div className="sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700">
+          <p className="">Related Doctors</p>
+          <RelatedDoctors docId={docId} speciality={docInfo.speciality} />
         </div>
       </div>
     )

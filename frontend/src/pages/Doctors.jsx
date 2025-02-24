@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { redirect, useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 
 const Doctors = () => {
@@ -109,7 +109,7 @@ const Doctors = () => {
             <div
               className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
               key={idx}
-              onClick={() => navigate(`./appointment/${doctor._id}`)}
+              onClick={() => navigate(`/doctors/appointment/${doctor._id}`)}
             >
               <img src={doctor.image} alt="" className="bg-blue-50" />
               <div className="p-4">
