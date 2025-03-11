@@ -104,7 +104,7 @@ const Doctors = () => {
             Gastroenterologist
           </p>
         </div>
-        <div className="w-full grid grid-cols-auto gap-4 gap-y-6">
+        <div className="w-full grid grid-cols-auto  max-sm:grid-cols-2 gap-4 gap-y-6">
           {filterDoc?.map((doctor, idx) => (
             <div
               className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
