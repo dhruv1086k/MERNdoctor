@@ -55,10 +55,22 @@ const AddDoctor = () => {
       );
       if (data.success) {
         toast.success(data.message);
+        setDocImg(false);
+        setName("");
+        setPassword("");
+        setEmail("");
+        setAddress1("");
+        setAddress2("");
+        setDegree("");
+        setAbout("");
+        setFees("");
       } else {
         toast.error(data.message);
       }
-    } catch (err) {}
+    } catch (err) {
+      toast.error(err.message);
+      console.log(err);
+    }
   };
   return (
     <form onSubmit={onSubmitHandler} className="m-5 w-full">

@@ -1,5 +1,9 @@
 import express from "express";
-import { addDoctor, loginAdmin } from "../controllers/adminController.js";
+import {
+  addDoctor,
+  allDoctors,
+  loginAdmin,
+} from "../controllers/adminController.js";
 import upload from "../middleware/multer.js";
 import authAdmin from "../middleware/authAdmin.js";
 
@@ -10,5 +14,6 @@ adminRouter.post("/add-doctor", authAdmin, upload.single("image"), addDoctor);
 // image will be parsed from 'upload.single("image")'
 
 adminRouter.post("/login", loginAdmin);
+adminRouter.post("/all-doctors", authAdmin, allDoctors);
 
 export default adminRouter;
