@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// api endpoints
+// api̥ endpoints
 app.use("/api/admin", adminRouter);
 
 app.get("/", (req, res) => {
