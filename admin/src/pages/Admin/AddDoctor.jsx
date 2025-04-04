@@ -44,9 +44,9 @@ const AddDoctor = () => {
       ); // we can only send string so we wil convert this json data to string using stringify method
 
       //   logging formdata
-      formData.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
-      });
+      //   formData.forEach((value, key) => {
+      //     console.log(`${key}: ${value}`);
+      //   });
 
       const { data } = await axios.post(
         backendUrl + "/api/admin/add-doctor",
@@ -135,7 +135,7 @@ const AddDoctor = () => {
               <select
                 className="border rounded px-3 py-2"
                 name=""
-                id=""
+                id="experience"
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
               >
