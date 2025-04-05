@@ -1,7 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { redirect, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const { token, setToken, backendUrl } = useContext(AppContext);
   const [state, setState] = useState("Sign Up"); // for setting login state
+
+  const navigate = useNavigate();
 
   //   state variables to handle user login details
   const [email, setEmail] = useState("");
@@ -9,9 +16,48 @@ const Login = () => {
   const [name, setName] = useState("");
 
   //   for handling form data
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
+
+    try {
+      if (state === "Sign Up") {
+        const { data } = await axios.post(backendUrl + "/api/user/register", {
+          name,
+          password,
+          email,
+        });
+        if (data.success) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+          setEmail("");
+          setPassword("");
+          setName("");
+          setState("Signin");
+        } else {
+          toast.error(data.message);
+        }
+      } else {
+        const { data } = await axios.post(backendUrl + "/api/user/login", {
+          password,
+          email,
+        });
+        if (data.success) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/");
+    }
+  }, [token]);
 
   return (
     <div className="flex items-center justify-center py-36">
@@ -22,7 +68,7 @@ const Login = () => {
         <p className="text-gray-600 mb-4">
           Please {state === "Sign Up" ? "sign up" : "login"} to book appointment
         </p>
-        <form>
+        <form onSubmit={onSubmitHandler}>
           {state === "Sign Up" && (
             <div className="mb-4">
               <label className="block text-gray-700">Full Name</label>
