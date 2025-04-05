@@ -2,6 +2,7 @@ import { createContext } from "react";
 import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export const AppContext = createContext();
 
@@ -20,9 +21,12 @@ const AppContextProvider = (props) => {
       const { data } = await axios.get(backendUrl + "/api/doctor/list");
       if (data.success) {
         setDoctors(data.doctors);
+      } else {
+        toast.error(data.message);
       }
     } catch (err) {
       console.log(err.message);
+      toast.error(err.message);
     }
   };
 

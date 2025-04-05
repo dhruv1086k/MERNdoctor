@@ -44,6 +44,5 @@ const userSchema = new mongoose.Schema(
 );
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);
-//   if the model of that doctor already exists then that will be used otherwise new model would be created
 
 export default userModel;
