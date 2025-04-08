@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const MyAppointments = () => {
-  const { backendUrl, token } = useContext(AppContext);
+  const { backendUrl, token, getDoctorsData } = useContext(AppContext);
 
   const getUserAppointments = async () => {
     try {
@@ -15,6 +15,26 @@ const MyAppointments = () => {
       if (data.success) {
         setAppointments(data.appointments.reverse());
         console.log(data.appointments);
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error(err.message);
+    }
+  };
+
+  const cancelAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/user/cancel-appointment",
+        { appointmentId },
+        { headers: { token } }
+      );
+      if (data.success) {
+        toast.success(data.message);
+        getUserAppointments();
+        getDoctorsData();
+      } else {
+        toast.error(data.message);
       }
     } catch (err) {
       console.log(err);
@@ -66,12 +86,24 @@ const MyAppointments = () => {
 
               {/* Buttons */}
               <div className="flex flex-col space-y-2 mt-4 md:mt-0">
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full md:w-auto">
-                  Pay here
-                </button>
-                <button className="border border-gray-400 text-gray-700 px-4 py-2 rounded-md hover:bg-red-500 hover:text-white transition-all duration-200 w-full md:w-auto">
-                  Cancel appointment
-                </button>
+                {!doc.cancelled && (
+                  <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full md:w-auto">
+                    Pay Online
+                  </button>
+                )}
+                {!doc.cancelled && (
+                  <button
+                    onClick={() => cancelAppointment(doc._id)}
+                    className="border border-gray-400 text-gray-700 px-4 py-2 rounded-md hover:bg-red-500 hover:text-white transition-all duration-200 w-full md:w-auto"
+                  >
+                    Cancel appointment
+                  </button>
+                )}
+                {doc.cancelled && (
+                  <button className="cursor-default border border-red-500 px-4 py-2 rounded-md text-red-500  transition-all duration-200 w-full md:w-auto">
+                    Appointment cancelled
+                  </button>
+                )}
               </div>
             </div>
             <hr className="my-4" />
