@@ -4,6 +4,8 @@ import bcrypt, { genSalt } from "bcryptjs";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
+import doctorModel from "../models/doctorModel.js";
+import appointmentModel from "../models/appointmentModel.js";
 
 // api to register user
 const registerUser = async (req, res) => {
@@ -116,4 +118,61 @@ const updateProfile = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, getProfile, updateProfile };
+// API to book appointment
+const bookAppointment = async (req, res) => {
+  try {
+    const { userId, docId, slotDate, slotTime } = req.body;
+    const docData = await doctorModel.findById(docId).select("-password");
+
+    if (!docData.available) {
+      return res.json({
+        success: false,
+        message: "Doctor not available",
+      });
+    }
+
+    let slots_booked = docData.slots_booked;
+
+    // checking for slots availability
+    if (slots_booked[slotDate]) {
+      if (slots_booked[slotDate].includes(slotTime)) {
+        return res.json({
+          success: false,
+          message: "Slot not available",
+        });
+      } else {
+        slots_booked[slotDate].push(slotTime);
+      }
+    } else {
+      slots_booked[slotDate] = [];
+      slots_booked[slotDate].push(slotTime);
+    }
+
+    const userData = await userModel.findById(userId).select("-password");
+    delete docData.slots_booked; // we are removing this from the appointment model because it will be storing all the booked slots and we don't want to show the history of booked slots
+
+    const appointmentData = {
+      userId,
+      docId,
+      userData,
+      docData,
+      amount: docData.fees || 0,
+      slotTime,
+      slotDate,
+      date: Date.now(),
+    };
+
+    const newAppointment = new appointmentModel(appointmentData);
+    await newAppointment.save();
+
+    // save new slotsData in docData
+    await doctorModel.findByIdAndUpdate(docId, { slots_booked });
+
+    res.json({ success: true, message: "Appointment Booked" });
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false, message: err.message });
+  }
+};
+
+export { registerUser, loginUser, getProfile, updateProfile, bookAppointment };
