@@ -8,7 +8,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
 
-  const { token, setToken } = useContext(AppContext);
+  const { token, setToken, userData } = useContext(AppContext);
 
   const logout = () => {
     setToken(false);
@@ -42,11 +42,11 @@ const Navbar = () => {
       {/* User Profile & Mobile Menu Button */}
       <div className="flex items-center gap-4">
         {/* Profile Menu */}
-        {token ? (
+        {token && userData ? (
           <div className="relative group cursor-pointer">
             <div className="flex items-center gap-2">
               <img
-                src={assets.profile_pic}
+                src={userData.image}
                 alt="Profile"
                 className="w-8 rounded-full"
               />

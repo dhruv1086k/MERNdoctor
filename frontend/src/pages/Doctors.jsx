@@ -120,15 +120,35 @@ const Doctors = () => {
         <div className="w-full grid grid-cols-auto  max-sm:grid-cols-2 gap-4 gap-y-6">
           {filterDoc?.map((doctor, idx) => (
             <div
-              className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
+              className={`${
+                doctor.available
+                  ? "border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
+                  : "border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500 opacity-70"
+              }`}
               key={idx}
-              onClick={() => navigate(`/doctors/appointment/${doctor._id}`)}
+              onClick={() =>
+                navigate(
+                  `${
+                    doctor.available ? `/doctors/appointment/${doctor._id}` : ""
+                  }`
+                )
+              }
             >
               <img src={doctor.image} alt="" className="bg-blue-50" />
               <div className="p-4">
-                <div className="flex items-center gap-2 text-sm text-center text-green-400">
-                  <p className="w-2 h-2 bg-green-400 rounded-full"></p>
-                  <p>Available</p>
+                <div className="flex items-center gap-2 text-sm text-center">
+                  {doctor.available ? (
+                    <p className="w-2 h-2 bg-green-400 rounded-full"></p>
+                  ) : (
+                    <p className="w-2 h-2 bg-red-600 rounded-full"></p>
+                  )}
+                  <p
+                    className={`${
+                      doctor.available ? "text-green-400" : "text-red-600"
+                    }`}
+                  >
+                    {doctor.available ? "Available" : "Not Available"}
+                  </p>
                 </div>
                 <p className="text-gray-600 text-lg font-medium">
                   {doctor.name}
