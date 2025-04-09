@@ -2,9 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const MyAppointments = () => {
   const { backendUrl, token, getDoctorsData } = useContext(AppContext);
+  const [appointments, setAppointments] = useState([]);
+
+  const navigate = useNavigate();
 
   const getUserAppointments = async () => {
     try {
@@ -42,13 +46,58 @@ const MyAppointments = () => {
     }
   };
 
+  const initPay = (order) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: "Appointment Payment",
+      description: "Appointment Payment",
+      order_id: order.id,
+      receipt: order.receipt,
+      handler: async (response) => {
+        console.log(response);
+        try {
+          const { data } = await axios.post(
+            backendUrl + "/api/user/verify-razorpay",
+            response,
+            { headers: { token } }
+          );
+
+          if (data.success) {
+            getUserAppointments();
+            navigate("/my-appointments");
+          }
+        } catch (err) {
+          console.log(err);
+          toast.error(err.message);
+        }
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open(); // for popup of rzp
+  };
+
+  const appointmentRazorpay = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/user/payment-razorpay",
+        { appointmentId },
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        initPay(data.order);
+      }
+    } catch (err) {}
+  };
+
   useEffect(() => {
     if (token) {
       getUserAppointments();
     }
   }, [token]);
-
-  const [appointments, setAppointments] = useState([]);
 
   return (
     <div className="px-4 md:px-10">
@@ -86,8 +135,19 @@ const MyAppointments = () => {
 
               {/* Buttons */}
               <div className="flex flex-col space-y-2 mt-4 md:mt-0">
-                {!doc.cancelled && (
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full md:w-auto">
+                {!doc.cancelled && doc.payment && (
+                  <button
+                    onClick={() => appointmentRazorpay(doc._id)}
+                    className="bg-green-600 text-white px-4 py-2 rounded-md w-full md:w-auto"
+                  >
+                    Paid
+                  </button>
+                )}
+                {!doc.cancelled && !doc.payment && (
+                  <button
+                    onClick={() => appointmentRazorpay(doc._id)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full md:w-auto"
+                  >
                     Pay Online
                   </button>
                 )}
