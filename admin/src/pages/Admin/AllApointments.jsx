@@ -4,7 +4,8 @@ import { IoCloseSharp } from "react-icons/io5";
 import { AppContext } from "../../context/appContext";
 
 const AllAppointments = () => {
-  const { aToken, appointments, getAllAppointments } = useContext(AdminContext);
+  const { aToken, appointments, getAllAppointments, cancelAppointment } =
+    useContext(AdminContext);
   const { calculateAge } = useContext(AppContext);
 
   useEffect(() => {
@@ -100,11 +101,20 @@ const AllAppointments = () => {
                       <span>{appointment.docData.name}</span>
                     </div>
                   </td>
-                  <td className="py-4 px-4">{appointment.docData.fees}</td>
+                  <td className="py-4 px-4">${appointment.docData.fees}</td>
                   <td className="py-4 px-4">
-                    <button className="text-red-400">
-                      <IoCloseSharp size={16} />
-                    </button>
+                    {appointment.cancelled ? (
+                      <p className="text-xs text-red-600 font-medium">
+                        Cancelled
+                      </p>
+                    ) : (
+                      <button
+                        onClick={() => cancelAppointment(appointment._id)}
+                        className="text-red-400"
+                      >
+                        <IoCloseSharp size={16} />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
