@@ -2,6 +2,8 @@ import { useContext, useState } from "react";
 import { AdminContext } from "../context/adminContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { DoctorContext } from "../context/DoctorContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [state, setState] = useState("Admin");
@@ -9,6 +11,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const { setAToken, backendUrl } = useContext(AdminContext);
+  const { setDToken } = useContext(DoctorContext);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -26,6 +29,17 @@ export default function Login() {
           toast.error(data.message);
         }
       } else {
+        const { data } = await axios.post(backendUrl + "/api/doctor/login", {
+          email,
+          password,
+        });
+        if (data.success) {
+          localStorage.setItem("dToken", data.token); //if user reloads the webpage then token will be taken from local storage
+          setDToken(data.token);
+          console.log(data.token);
+        } else {
+          toast.error(data.message);
+        }
       }
     } catch (err) {}
   };
@@ -60,7 +74,10 @@ export default function Login() {
               className="border border-[#DADADA] rounded w-full p-2 mt-1"
             />
           </div>
-          <button className="text-white bg-primary w-full py-2 rounded-md text-base">
+          <button
+            type="submit"
+            className="text-white bg-primary w-full py-2 rounded-md text-base"
+          >
             Login
           </button>
           {state === "Admin" ? (

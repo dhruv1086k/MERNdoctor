@@ -83,7 +83,11 @@ const AllAppointments = () => {
                     </div>
                   </td>
                   <td className="py-4 px-4">
-                    {calculateAge(appointment.userData.dob)}
+                    {calculateAge(appointment.userData.dob) ? (
+                      calculateAge(appointment.userData.dob)
+                    ) : (
+                      <p>-</p>
+                    )}
                   </td>
                   <td className="py-4 px-4">
                     {appointment.slotDate.replaceAll("_", "/")}{" "}
